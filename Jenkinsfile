@@ -26,6 +26,7 @@ pipeline {
                 sh '''
                 packer version
                 packer validate --var-file packer-vars.json packer.json
+                packer plugins install github.com/hashicorp/amazon
                 '''
              }
         }
