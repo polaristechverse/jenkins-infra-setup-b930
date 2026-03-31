@@ -24,7 +24,7 @@ pipeline {
              }
              steps{
                 sh '''
-                packer 
+                packer version
                 packer plugins install github.com/hashicorp/amazon
                 packer validate --var-file packer-vars.json packer.json
                 '''
