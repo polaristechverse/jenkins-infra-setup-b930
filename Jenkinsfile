@@ -5,8 +5,8 @@ pipeline {
        parameters {
         choice(
             name: 'PACKER_BUILD', choices: ['no', 'yes'], description: 'Select the build requirement'
-            name: 'Terraform_BUILD', choices: ['no', 'yes'], description: 'Select the build requirement'
         )
+        choice(name: 'Terraform_BUILD', choices: ['no', 'yes'], description: 'Select the build requirement')
     }
     stages{
         stage('Check the software') {
