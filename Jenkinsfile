@@ -18,16 +18,21 @@ pipeline {
                 '''
             }
         }
-        stage('Packer build') {
-            when {
-                expression { return params.PACKER_BUILD == 'yes' }
-             }
+        stage('Packer validate') {
              steps{
                 sh '''
                 packer version
                 packer plugins install github.com/hashicorp/amazon
                 packer validate --var-file packer-vars.json packer.json
                 '''
+             }
+        }
+        stage('Packer_build') {
+               when {
+                expression { return params.PACKER_BUILD == 'yes' }
+             }
+             steps{
+                sh 'packer build --var-file packer-vars.json packer.json'
              }
         }
     }
