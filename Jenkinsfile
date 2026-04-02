@@ -35,5 +35,30 @@ pipeline {
                 sh 'packer build --var-file packer-vars.json packer.json'
              }
         }
+        stage('capture amiid'){
+            when{
+                expression { return params.PACKER_BUILD == 'yes' }
+            }
+            steps{
+                sh '''
+                AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ':' -f2)
+                echo "Extracted AMI: $AMI_ID"
+                sed -i "s/^ami *= *.*/ami = \\"$AMI_ID\\"/" terraform.tfvars
+                echo "Updated terraform.tfvars:"
+                cat terraform.tfvars
+                '''
+            }
+        }
+        stage('capture the latest ami'){
+            steps {
+                sh '''
+                AMIID=$(aws ec2 describe-images --owners self --query 'Images | sort_by(@, &CreationDate)[-1].ImageId' --output text)
+                echo "Extracted AMI: $AMIID"
+                sed -i "s/^ami *= *.*/ami = \\"$AMIID\\"/" terraform.tfvars
+                echo "Updated terraform.tfvars:"
+                cat terraform.tfvars
+                '''
+            }
+        }
     }
 }
