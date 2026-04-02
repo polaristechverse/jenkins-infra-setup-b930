@@ -4,9 +4,8 @@ pipeline {
     }
        parameters {
         choice(
-            name: 'PACKER_BUILD',
-            choices: ['no', 'yes'], 
-            description: 'Select the build requirement'
+            name: 'PACKER_BUILD', choices: ['no', 'yes'], description: 'Select the build requirement'
+            name: 'Terraform_BUILD', choices: ['no', 'yes'], description: 'Select the build requirement'
         )
     }
     stages{
@@ -59,6 +58,20 @@ pipeline {
                 cat terraform.tfvars
                 '''
             }
+        }
+        stage('Terraform_Setup'){
+            when {
+                expression { return params.Terraform_BUILD == 'yes' }
+            }
+            steps{
+                sh '''
+                terraform version
+                terraform init
+                terraform fmt
+                terraform validate
+                terraform plan 
+                '''
+            } 
         }
     }
 }
