@@ -7,6 +7,7 @@ pipeline {
             name: 'PACKER_BUILD', choices: ['no', 'yes'], description: 'Select the build requirement'
         )
         choice(name: 'Terraform_BUILD', choices: ['no', 'yes'], description: 'Select the build requirement')
+        choice(name: 'Terraform_Destroy', choices: ['no', 'yes'], description: 'Select the build requirement')
     }
     stages{
         stage('Check the software') {
@@ -70,8 +71,17 @@ pipeline {
                 terraform fmt
                 terraform validate
                 terraform plan 
+                terraform apply --auto-approve
                 '''
             } 
+        }
+        stage('Terraform_Destory') {
+            when {
+                expression { return params.Terraform_Destroy == 'yes' }
+            }
+            steps {
+                sh 'terraform destroy --auto-approve'
+            }
         }
     }
 }
